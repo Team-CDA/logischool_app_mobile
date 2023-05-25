@@ -5,7 +5,7 @@ import { NativeBaseProvider } from "native-base";
 import DrawerNavigation from './src/navigation/DrawerNavigation';
 
 
-export default function App() {
+const App = () => {
   return (
     <NavigationContainer>
       <NativeBaseProvider>
@@ -14,3 +14,6 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+
+export default App;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import ProfileScreen from '../screens/SettingScreen';
 import TroisiemeEcran from '../screens/TroisiemeEcran';

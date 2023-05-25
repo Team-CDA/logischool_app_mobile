@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { Box } from 'native-base';
+import CustomGoBackHeader from '../components/CustomGoBackHeader';
 
 const NotificationScreen = () => {
   return (
-    <View>
-      <Text>NotificationScreen</Text>
-    </View>
-  )
-}
+    <Box safeArea flex={1}>
+      <CustomGoBackHeader title='Notification'/>
+      {/* Le reste du code ici  */}
+    </Box>
+  );
+};
 
-export default NotificationScreen
-
-const styles = StyleSheet.create({})
+export default NotificationScreen;

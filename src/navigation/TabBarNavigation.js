@@ -9,7 +9,7 @@ import CustomHeader from '../components/CustomHeader';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabBarNavigation() {
+const TabBarNavigation = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -47,3 +47,6 @@ export default function TabBarNavigation() {
     </Tab.Navigator>
   );
 }
+
+
+export default TabBarNavigation;
