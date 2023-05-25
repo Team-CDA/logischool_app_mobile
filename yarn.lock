@@ -6947,6 +6947,13 @@ react-native-codegen@^0.71.5:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
+react-native-drawer-layout@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-3.2.0.tgz#1ab05d0bed6bb684353c17c96e1d3e6c1a4e225d"
+  integrity sha512-d/kvzeBhXjqcRGlfkTSB96ZRKH6g6YxJK+gPtUOCOCH5piHpsupgX+tLAHdM8r8NUzN6Tl9656xfJTuVb8Zrgw==
+  dependencies:
+    use-latest-callback "^0.1.5"
+
 react-native-gesture-handler@^2.10.1:
   version "2.10.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.10.1.tgz#ca5f0f09bfa8d0560f492fc599fa64a64dcdd231"
