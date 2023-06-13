@@ -16,6 +16,8 @@ import {Skeleton} from 'native-base';
 import HeaderComponentCard from '../components/HomeScreen/HeaderComponentCard';
 import FooterComponentCard from '../components/HomeScreen/FooterComponentCard';
 
+
+
 const data = [
   {
     id: '6',
