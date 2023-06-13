@@ -3,7 +3,7 @@ import {HOST_API_KEY} from '../config/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://9c78-31-33-81-5.ngrok-free.app',
+  baseURL: 'http://10.0.2.2:3000',
   headers: {'Content-Type': 'application/json'},
 });
 

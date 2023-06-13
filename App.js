@@ -23,7 +23,7 @@ const theme = extendTheme(myTheme);
 
 function App() {
   const [token, setToken] = useState(null);
-  const socket = io('https://9c78-31-33-81-5.ngrok-free.app');
+  const socket = io('http://10.0.2.2:3000'); // pour l'émulateur android, utiliser 10.2.2:3000 au lieu de localhost:3000
   const [notifications, setNotifications] = useState(0);
   const [alerts, setAlerts] = useState([]);
 
