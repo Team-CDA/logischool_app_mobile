@@ -1,10 +1,8 @@
-import {View, Text, TextInput, StyleSheet} from 'react-native';
+import {View, Text, TextInput, StyleSheet, ImageBackground} from 'react-native';
 import React, {useEffect, useState, useContext, useRef} from 'react';
 import {
   Input,
   Pressable,
-  Button,
-  useTheme,
   Checkbox,
   useToast,
   Box,
@@ -15,39 +13,18 @@ import * as Yup from 'yup';
 import {authenticateUser} from '../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserContext from '../utils/context/UserContext';
+import CustomMediumButton from './Buttons/CustomMediumButton';
+
+// image d'arrière-plan
+const bgImage = require('../assets/img/school-background.jpeg'); 
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [checked, setChecked] = useState(null);
   const [mailSaved, setMailSaved] = useState(null);
   const userContext = useContext(UserContext);
-  const [groupValue, setGroupValue] = useState(['saveEmail']);
-
-  //Création du toast d'erreur de connexion
   const toast = useToast();
   const toastIdRef = useRef();
-
-  function close() {
-    if (toastIdRef.current) {
-      toast.close(toastIdRef.current);
-    }
-  }
-
-  function addToast() {
-    // toastIdRef.current = toast.show({
-    //   title: 'Identifiant ou mot de passe incorrect',
-    //   variant: 'outline',
-    // });
-    toastIdRef.current = toast.show({
-      render: () => {
-        return (
-          <Box bg="error.300" px="2" py="1" rounded="sm" mb={5}>
-            Identifiant ou mot de passe incorrect
-          </Box>
-        );
-      },
-    });
-  }
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().required("L'adresse e-mail est requise"),
@@ -56,14 +33,12 @@ const LoginForm = () => {
 
   const handleCheckboxChange = () => {
     setChecked(!checked);
-    // console.log(checked);
   };
 
   const verifyIfMailSaved = async () => {
     const isMail = await AsyncStorage.getItem('rememberEmail');
     let user = await AsyncStorage.getItem('user');
     user = JSON.parse(user);
-    console.log(user);
     if (isMail == 'true') {
       setChecked(true);
       setMailSaved(user.email);
@@ -78,10 +53,7 @@ const LoginForm = () => {
     }
   }, [checked]);
 
-  const theme = useTheme();
-
   const handleLogin = async values => {
-    console.log('values', values);
     authenticateUser(values).then(r => {
       if (r) {
         userContext.setToken(r.token);
@@ -91,16 +63,24 @@ const LoginForm = () => {
           AsyncStorage.setItem('rememberEmail', 'true');
         }
       } else {
-        console.log('erreur');
         setIsLoading(false);
-        addToast();
+        toastIdRef.current = toast.show({
+          render: () => {
+            return (
+              <Box bg="error.300" px="2" py="1" rounded="sm" mb={5}>
+                Identifiant ou mot de passe incorrect
+              </Box>
+            );
+          },
+        });
       }
     });
   };
+
   const [hidePwd, setHidePwd] = React.useState(true);
-  console.log('checked', checked);
+
   return checked !== null ? (
-    <View>
+    <ImageBackground source={bgImage} style={styles.container}>
       <Formik
         enableReinitialize
         validationSchema={validationSchema}
@@ -108,7 +88,7 @@ const LoginForm = () => {
         validateOnBlur={false}
         initialValues={{
           email: mailSaved,
-          password: 'examplePassword',
+          password: '',
           checked: checked,
         }}
         onSubmit={values => {
@@ -117,6 +97,8 @@ const LoginForm = () => {
         {({handleChange, handleSubmit, values, errors, validateForm}) => (
           <View style={{display: 'flex', alignItems: 'center'}}>
             <Input
+              backgroundColor="white"
+              color="black"
               mt={'5%'}
               w={{
                 base: '60%',
@@ -128,6 +110,8 @@ const LoginForm = () => {
             />
             {errors.email && <Text>{errors.email}</Text>}
             <Input
+              backgroundColor="white"
+              color="black"
               mt={'5%'}
               w={{
                 base: '60%',
@@ -143,13 +127,13 @@ const LoginForm = () => {
                     <Icon
                       name={'eye'}
                       size={20}
-                      color={theme.backgroundColor}
+                      color="black" // Vous pouvez ajuster la couleur à votre thème
                     />
                   ) : (
                     <Icon
                       name={'eye-off'}
                       size={20}
-                      color={theme.backgroundColor}
+                      color="black" // Vous pouvez ajuster la couleur à votre thème
                     />
                   )}
                 </Pressable>
@@ -164,14 +148,10 @@ const LoginForm = () => {
               Se souvenir de moi
             </Checkbox>
             {isLoading ? (
-              <Button isLoading bg={theme.backgroundColor} mt={'5%'} w={'60%'}>
-                Connexion
-              </Button>
-            ) : (
-              <Button
-                bg={theme.backgroundColor}
-                mt={'5%'}
-                w={'60%'}
+              <CustomMediumButton
+                text="Connexion"
+                titleColor="#fff"
+                loading
                 onPress={async values => {
                   setIsLoading(true);
                   validateForm().then(res => {
@@ -181,17 +161,40 @@ const LoginForm = () => {
                       handleSubmit(values);
                     }
                   });
-                }}>
-                Connexion
-              </Button>
+                }}
+              />
+            ) : (
+              <CustomMediumButton
+                text="Connexion"
+                titleColor="#FFF"
+                onPress={async values => {
+                  setIsLoading(true);
+                  validateForm().then(res => {
+                    if (res.email || res.password) {
+                      setIsLoading(false);
+                    } else {
+                      handleSubmit(values);
+                    }
+                  });
+                }}
+              />
             )}
           </View>
         )}
       </Formik>
-    </View>
+    </ImageBackground>
   ) : (
     <></>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom:'40%',
+  },
+});
 
 export default LoginForm;
