@@ -1,13 +1,9 @@
 import React from 'react';
-import { Box } from 'native-base';
-import CustomGoBackHeader from '../components/CustomGoBackHeader';
+import { Box , Text} from 'native-base';
 
 const NotificationScreen = () => {
   return (
-    <Box safeArea flex={1}>
-      <CustomGoBackHeader title='Notification'/>
-      {/* Le reste du code ici  */}
-    </Box>
+<Text></Text>
   );
 };
 
