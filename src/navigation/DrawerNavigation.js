@@ -27,23 +27,27 @@ const CustomDrawerContent = ({navigation}) => {
       <DrawerItem
         label="Accueil"
         onPress={() => navigation.navigate('Accueil')}
-        icon={({ color, size }) => (
-          <Icon name="home-outline" color={color} size={size} />
+        icon={({ focused, color, size }) => (
+          <View style={{backgroundColor: focused ? 'blue' : 'transparent', borderRadius: 10}}>
+            <Icon name="home-outline" color={color} size={size} />
+          </View>
         )}
       />
       <DrawerItem
         label="Notification"
         onPress={() => navigation.navigate('Notification')}
-        icon={({ color, size }) => (
-          <Icon name="notifications-outline" color={color} size={size} />
+        icon={({ focused, color, size }) => (
+          <View style={{backgroundColor: focused ? 'blue' : 'transparent', borderRadius: 10}}>
+            <Icon name="notifications-outline" color={color} size={size} />
+          </View>
         )}
       />
       
       <View style={{marginTop: 'auto'}}>
         <TouchableOpacity onPress={toggleModal}>
-          <View style={{flexDirection: 'row', alignItems: 'center', padding: 16, margin:20,  backgroundColor: 'green', borderRadius: 10}}>
-            <Icon name="log-out-outline" size={24} color='red' />
-            <Text style={{marginLeft: 32, color: 'red', textAlign: 'center'}}>Déconnexion</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center', padding: 10, margin:20,  backgroundColor: '#FEFCF5', borderWidth:1, borderColor:'#F2DBB7', borderRadius: 10}}>
+            <Icon name="log-out-outline" size={24} color='#8C5701' />
+            <Text style={{marginLeft: 32, color: '#8C5701', textAlign: 'center', fontWeight:'bold', fontSize:16}}>Déconnexion</Text>
           </View>
         </TouchableOpacity>
         <LogoutModal visible={modalVisible} onClose={toggleModal} />
@@ -59,8 +63,6 @@ function DrawerNavigation() {
       screenOptions={{
         headerShown: false,
         drawerPosition: 'right',
-        // drawerActiveTintColor: 'red',
-        // drawerInactiveTintColor: 'black',
       }}
       drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen name="Accueil" component={TabBarNavigation} />
