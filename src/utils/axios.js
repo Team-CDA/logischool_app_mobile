@@ -51,7 +51,7 @@ export const getUserInfo = async userId => {
 
 export const getNotifications = async () => {
   try {
-    const response = await axiosInstance.get('/Alerts');
+    const response = await axiosInstance.get('/alerts');
     if (response.status === 200) {
       return response.data;
     } else {
