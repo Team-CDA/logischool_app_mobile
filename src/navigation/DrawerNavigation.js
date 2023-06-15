@@ -1,6 +1,5 @@
 import {
   DrawerContentScrollView,
-  DrawerItem,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
 import { View, TouchableOpacity, Text } from 'react-native';
@@ -15,32 +14,37 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const Drawer = createDrawerNavigator();
 
-const CustomDrawerContent = ({navigation}) => {
+const CustomDrawerContent = (props) => {
   const [modalVisible, setModalVisible] = React.useState(false);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
+  const isFocused = (routeName) => {
+    return props.state.routes[props.state.index].name === routeName;
+  };
+
+  const DrawerButton = ({ label, icon, route }) => (
+    <TouchableOpacity onPress={() => props.navigation.navigate(route)}>
+      <View style={{flexDirection: 'row', alignItems: 'center', padding: 10, margin : 10, marginLeft:20,  marginRight:20,  backgroundColor: isFocused(route) ? '#EFF7FF' : 'transparent', borderWidth: isFocused(route) ? 1 : 0, borderColor:'#0F80D7', borderRadius: 10}}>
+        <Icon name={icon} size={24} color={isFocused(route) ? '#0F80D7' : 'black'} />
+        <Text style={{marginLeft: 32, color: isFocused(route) ? '#0F80D7' : 'black', textAlign: 'center', fontWeight:'bold', fontSize:16}}>{label}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <DrawerContentScrollView contentContainerStyle={{flex: 1}}>
-      <DrawerItem
+      <DrawerButton
         label="Accueil"
-        onPress={() => navigation.navigate('Accueil')}
-        icon={({ focused, color, size }) => (
-          <View style={{backgroundColor: focused ? 'blue' : 'transparent', borderRadius: 10}}>
-            <Icon name="home-outline" color={color} size={size} />
-          </View>
-        )}
+        route="Accueil"
+        icon="home-outline"
       />
-      <DrawerItem
+      <DrawerButton
         label="Notification"
-        onPress={() => navigation.navigate('Notification')}
-        icon={({ focused, color, size }) => (
-          <View style={{backgroundColor: focused ? 'blue' : 'transparent', borderRadius: 10}}>
-            <Icon name="notifications-outline" color={color} size={size} />
-          </View>
-        )}
+        route="Notification"
+        icon="notifications-outline"
       />
       
       <View style={{marginTop: 'auto'}}>
