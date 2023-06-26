@@ -3,34 +3,20 @@ import {
   createDrawerNavigator,
 } from '@react-navigation/drawer';
 import { View, TouchableOpacity, Text } from 'react-native';
+import ProfileScreen from '../screens/SettingScreen';
+import TroisiemeEcran from '../screens/TroisiemeEcran';
+import QuatriemeEcran from '../screens/QuatriemeEcran';
 import NotificationScreen from '../screens/NotificationScreen';
 import TabBarNavigation from './TabBarNavigation';
-import React , {useState, useCallback, useEffect} from 'react';
+import React , {useState} from 'react';
 import LogoutModal from '../components/LogoutModal';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { getNotifications } from '../utils/axios'; // le chemin doit correspondre à l'emplacement de votre fichier axios.js
-
 
 const Drawer = createDrawerNavigator();
 
-
-  const CustomDrawerContent = (props) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [notificationCount, setNotificationCount] = useState(0);
-  
-    const loadNotifications = useCallback(() => {
-      getNotifications()
-        .then(data => {
-          setNotificationCount(data.length);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }, []);
-  
-    useEffect(() => {
-      loadNotifications();
-    }, [loadNotifications]);
+const CustomDrawerContent = (props) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(5); // A remplacer par le nombre réel de notifications
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);

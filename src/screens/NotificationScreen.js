@@ -12,16 +12,13 @@ const NotificationScreen = () => {
 
   const navigation = useNavigation();
 
-  const loadNotifications = useCallback(() => {
-    setRefreshing(true);
+  useEffect(() => {
     getNotifications()
       .then(data => {
         setNotifications(data);
-        setRefreshing(false);
       })
       .catch(error => {
         console.error(error);
-        setRefreshing(false);
       });
   }, []);
 
