@@ -60,7 +60,7 @@ const data = [
   },
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -107,7 +107,26 @@ const HomeScreen = () => {
                 height={100}
               />
             ) : (
-              <TouchableOpacity>
+              <TouchableOpacity
+              onPress={() => {
+                switch(item.title){
+                  case 'Dossier Scolaire':
+                    navigation.navigate('#');
+                    break;
+                  case 'Professeurs':
+                    navigation.navigate('#');
+                    break;
+                  case 'Devoirs':
+                    navigation.navigate('#');
+                    break;
+                  case 'Mes demandes':
+                    navigation.navigate('#');
+                    break;
+                  case 'Cantine':
+                    navigation.navigate('CantineScreen');
+                    break;
+                }
+              }}>
                 <Card style={styles.card} elevation={0}>
                   <Card.Content>
                     <Text style={styles.title}>{item.title}</Text>
