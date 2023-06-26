@@ -5,7 +5,7 @@ import CalendarScreen from '../screens/CalendarScreen';
 import CantineScreen from '../screens/CantineScreen';
 
 const Stack = createStackNavigator();
-l
+
 const HomeStackNavigation = () => {
   return (
     <Stack.Navigator initialRouteName="Home">

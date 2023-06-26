@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
-import { List, Title, Divider } from "react-native-paper";
+import { List, Title, Divider, Card } from "react-native-paper";
 import axiosInstance from "../utils/interceptor";
+import { Calendar } from 'react-native-calendars';
 
 const CantineScreen = () => {
   const [menus, setMenus] = useState([]);
+  const [selectedMenu, setSelectedMenu] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -12,6 +15,8 @@ const CantineScreen = () => {
         const response = await axiosInstance.get("/menus");
         if (Array.isArray(response.data)) {
           setMenus(response.data);
+          const todayMenu = response.data.find(menu => new Date(menu.menu_date).toISOString().split("T")[0] === selectedDate);
+          setSelectedMenu(todayMenu);
         } else {
           console.error("Erreur lors de la récupération des menus");
           setMenus([]);
@@ -24,23 +29,33 @@ const CantineScreen = () => {
     fetchMenus();
   }, []);
 
+  const onDayPress = (day) => {
+    setSelectedDate(day.dateString);
+    const selectedMenu = menus.find(menu => new Date(menu.menu_date).toISOString().split("T")[0] === day.dateString);
+    setSelectedMenu(selectedMenu);
+  }
+
   return (
     <ScrollView>
-      {menus.map((menu, index) => (
-        <View key={index}>
-          <Title>{new Date(menu.menu_date).toDateString()}</Title>
-          <List.Section>
-            <List.Subheader>Entrée</List.Subheader>
-            <List.Item title={menu.starter} />
+      <Calendar 
+        onDayPress={onDayPress}
+        markedDates={{[selectedDate]: {selected: true}}}
+      />
+      {selectedMenu && (
+        <Card>
+          <Card.Title title={`Menu du ${new Date(selectedMenu.menu_date).toDateString()}`} />
+          <Card.Content>
+            <Title>Entrée</Title>
+            <List.Item title={selectedMenu.starter} />
             <Divider />
-            <List.Subheader>Plat</List.Subheader>
-            <List.Item title={menu.main_course} />
+            <Title>Plat</Title>
+            <List.Item title={selectedMenu.main_course} />
             <Divider />
-            <List.Subheader>Dessert</List.Subheader>
-            <List.Item title={menu.dessert} />
-          </List.Section>
-        </View>
-      ))}
+            <Title>Dessert</Title>
+            <List.Item title={selectedMenu.dessert} />
+          </Card.Content>
+        </Card>
+      )}
     </ScrollView>
   );
 };
