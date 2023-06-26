@@ -1,19 +1,36 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, Animated, StyleSheet, Modal, Button } from 'react-native';
+import { getNotifications } from '../utils/axios';
 import { Swipeable, RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import UserContext from '../utils/context/UserContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NotificationScreen = () => {
-  const { alerts, setAlerts } = useContext(UserContext);
-  const [selectedAlert, setSelectedAlert] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const navigation = useNavigation();
 
+  const loadNotifications = useCallback(() => {
+    setRefreshing(true);
+    getNotifications()
+      .then(data => {
+        setNotifications(data);
+        setRefreshing(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setRefreshing(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
   const handleDelete = (item) => {
-    setSelectedAlert(item);
+    setSelectedNotification(item);
     setModalVisible(true);
   };
 
@@ -21,29 +38,17 @@ const NotificationScreen = () => {
     // Implémentez la logique d'épinglage ici
   };
 
-  const confirmDelete = async () => {
-    // Suppression de l'alerte du contexte
-    const updatedAlerts = alerts.filter(alert => alert.id !== selectedAlert.id);
-    setAlerts(updatedAlerts);
+  const confirmDelete = () => {
+    setNotifications(notifications.filter(notification => notification.id !== selectedNotification.id));
     setModalVisible(false);
-    
-    // Suppression de l'alerte du localStorage
-    await AsyncStorage.setItem('alerts', JSON.stringify(updatedAlerts));
+    // Appel à l'API pour supprimer la notification ici
   };
-  
-  
 
-  const renderAlert = ({ item }) => {
+  const renderNotification = ({ item }) => {
     const renderRightAction = (progress, dragX) => {
-      const scale = dragX.interpolate({
-        inputRange: [-100, 0],
-        outputRange: [1, 0],
-        extrapolate: 'clamp',
-      });
-      const opacity = dragX.interpolate({
-        inputRange: [-100, -50],
-        outputRange: [1, 0],
-        extrapolate: 'clamp',
+      const trans = dragX.interpolate({
+        inputRange: [0, 50, 100, 101],
+        outputRange: [-20, 0, 0, 1],
       });
       return (
         <RectButton onPress={() => handleDelete(item)}>
@@ -51,8 +56,7 @@ const NotificationScreen = () => {
             style={[
               styles.rightAction,
               {
-                transform: [{ scale: scale }],
-                opacity: opacity,
+                transform: [{ translateX: trans }],
               },
             ]}>
             <Text style={styles.actionText}>Supprimer</Text>
@@ -60,7 +64,6 @@ const NotificationScreen = () => {
         </RectButton>
       );
     };
-    
     return (
       <Swipeable renderRightActions={renderRightAction}>
         <RectButton onPress={() => handlePin(item)}>
@@ -81,10 +84,12 @@ const NotificationScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <FlatList
-        data={alerts}
-        renderItem={renderAlert}
+        data={notifications}
+        renderItem={renderNotification}
         keyExtractor={(item) => item.id.toString()}  
         ListEmptyComponent={renderEmptyList}
+        refreshing={refreshing}
+        onRefresh={loadNotifications}
       />
       <Button title="Fermer" onPress={() => navigation.goBack()} />
       <Modal
@@ -96,7 +101,7 @@ const NotificationScreen = () => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Confirmer la suppression de l'alerte?</Text>
+            <Text style={styles.modalText}>Confirmer la suppression de la notification?</Text>
             <Button onPress={confirmDelete} title="Confirmer" />
             <Button onPress={() => setModalVisible(false)} title="Annuler" />
           </View>
@@ -116,14 +121,14 @@ const styles = StyleSheet.create({
   actionText: {
     color: 'white',
     padding: 20,
-    },
-    centeredView: {
+  },
+  centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22
-    },
-    modalView: {
+  },
+  modalView: {
     margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
@@ -131,17 +136,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
-    width: 0,
-    height: 2
+      width: 0,
+      height: 2
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5
-    },
-    modalText: {
+  },
+  modalText: {
     marginBottom: 15,
     textAlign: "center"
-    }
-    });
-    
-    export default NotificationScreen;
+  }
+});
+
+export default NotificationScreen;

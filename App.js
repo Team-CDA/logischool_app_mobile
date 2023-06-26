@@ -106,6 +106,8 @@ useEffect(() => {
         userInfo: userInfo, 
         setUserInfo: setUserInfo,  
         disconnect: disconnect,
+        alerts: alerts,
+        setAlerts: setAlerts,
       }}>
       <NativeBaseProvider theme={theme}>
         {!token ? (

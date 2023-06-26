@@ -1,37 +1,31 @@
-import {
-  DrawerContentScrollView,
-  createDrawerNavigator,
-} from '@react-navigation/drawer';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { DrawerContentScrollView, createDrawerNavigator } from '@react-navigation/drawer';
 import { View, TouchableOpacity, Text } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import NotificationScreen from '../screens/NotificationScreen';
 import TabBarNavigation from './TabBarNavigation';
 import CantineScreen from '../screens/CantineScreen';
-import React , {useState, useCallback, useEffect} from 'react';
+import UserContext from '../utils/context/UserContext';
 import LogoutModal from '../components/LogoutModal';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { getNotifications } from '../utils/axios'; // le chemin doit correspondre à l'emplacement de votre fichier axios.js
-
 
 const Drawer = createDrawerNavigator();
 
+const CustomDrawerContent = (props) => {
+  const { alerts, setAlerts } = useContext(UserContext);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const CustomDrawerContent = (props) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [notificationCount, setNotificationCount] = useState(0);
-  
-    const loadNotifications = useCallback(() => {
-      getNotifications()
-        .then(data => {
-          setNotificationCount(data.length);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }, []);
-  
-    useEffect(() => {
-      loadNotifications();
-    }, [loadNotifications]);
+  const loadNotifications = useCallback(async () => {
+    const storedAlerts = await AsyncStorage.getItem('alerts');
+    if (storedAlerts) {
+      setAlerts(JSON.parse(storedAlerts));
+    }
+  }, [setAlerts]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -43,12 +37,12 @@ const Drawer = createDrawerNavigator();
 
   const DrawerButton = ({ label, icon, route, hasBadge }) => (
     <TouchableOpacity onPress={() => props.navigation.navigate(route)}>
-      <View style={{flexDirection: 'row', alignItems: 'center', padding: 10, margin: 10, marginLeft:20,  marginRight:20,  backgroundColor: isFocused(route) ? '#EFF7FF' : 'transparent', borderWidth: isFocused(route) ? 1 : 0, borderColor:'#0F80D7', borderRadius: 10}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, margin: 10, marginLeft: 20, marginRight: 20, backgroundColor: isFocused(route) ? '#EFF7FF' : 'transparent', borderWidth: isFocused(route) ? 1 : 0, borderColor: '#0F80D7', borderRadius: 10 }}>
         <Icon name={icon} size={24} color={isFocused(route) ? '#0F80D7' : 'black'} />
-        <Text style={{marginLeft: 32, color: isFocused(route) ? '#0F80D7' : 'black', textAlign: 'center', fontWeight:'bold', fontSize:16}}>{label}</Text>
-        {hasBadge && notificationCount > 0 && (
-          <View style={{backgroundColor: 'red', borderRadius: 10, width: 24, height: 24, justifyContent: 'center', alignItems: 'center', marginLeft: 'auto'}}>
-            <Text style={{color: 'white', fontWeight: 'bold'}}>{notificationCount}</Text>
+        <Text style={{ marginLeft: 32, color: isFocused(route) ? '#0F80D7' : 'black', textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{label}</Text>
+        {hasBadge && alerts.length > 0 && (
+          <View style={{ backgroundColor: 'red', borderRadius: 10, width: 24, height: 24, justifyContent: 'center', alignItems: 'center', marginLeft: 'auto' }}>
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>{alerts.length}</Text>
           </View>
         )}
       </View>
@@ -56,7 +50,7 @@ const Drawer = createDrawerNavigator();
   );
 
   return (
-    <DrawerContentScrollView contentContainerStyle={{flex: 1}}>
+    <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <DrawerButton
         label="Accueil"
         route="Accueil"
@@ -68,12 +62,12 @@ const Drawer = createDrawerNavigator();
         icon="notifications-outline"
         hasBadge={true}
       />
-      
-      <View style={{marginTop: 'auto'}}>
+
+      <View style={{ marginTop: 'auto' }}>
         <TouchableOpacity onPress={toggleModal}>
-          <View style={{flexDirection: 'row', alignItems: 'center', padding: 10, margin:20,  backgroundColor: '#FEFCF5', borderWidth:1, borderColor:'#F2DBB7', borderRadius: 10}}>
-            <Icon name="log-out-outline" size={24} color='#8C5701' />
-            <Text style={{marginLeft: 32, color: '#8C5701', textAlign: 'center', fontWeight:'bold', fontSize:16}}>Déconnexion</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, margin: 20, backgroundColor: '#FEFCF5', borderWidth: 1, borderColor: '#F2DBB7', borderRadius: 10 }}>
+          <Icon name="log-out-outline" size={24} color='#8C5701' />
+            <Text style={{ marginLeft: 32, color: '#8C5701', textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>Déconnexion</Text>
           </View>
         </TouchableOpacity>
         <LogoutModal visible={modalVisible} onClose={toggleModal} />
@@ -90,7 +84,8 @@ function DrawerNavigation() {
         headerShown: false,
         drawerPosition: 'right',
       }}
-      drawerContent={props => <CustomDrawerContent {...props} />}>
+      drawerContent={props => <CustomDrawerContent {...props} />}
+    >
       <Drawer.Screen name="Accueil" component={TabBarNavigation} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
       <Drawer.Screen name="Cantine" component={CantineScreen} />
