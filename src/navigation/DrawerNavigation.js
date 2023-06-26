@@ -8,7 +8,8 @@ import TroisiemeEcran from '../screens/TroisiemeEcran';
 import QuatriemeEcran from '../screens/QuatriemeEcran';
 import NotificationScreen from '../screens/NotificationScreen';
 import TabBarNavigation from './TabBarNavigation';
-import React , {useState} from 'react';
+import CantineScreen from '../screens/CantineScreen';
+import React , {useState, useCallback, useEffect} from 'react';
 import LogoutModal from '../components/LogoutModal';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -78,6 +79,8 @@ function DrawerNavigation() {
       drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen name="Accueil" component={TabBarNavigation} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
+      <Drawer.Screen name="Cantine" component={CantineScreen} />
+
     </Drawer.Navigator>
   );
 }
