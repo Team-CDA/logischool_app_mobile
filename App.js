@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import DrawerNavigation from './src/navigation/DrawerNavigation';
 import {
@@ -15,9 +15,18 @@ import {Pressable} from 'react-native';
 import UserContext from './src/utils/context/UserContext';
 import io from 'socket.io-client';
 
+
+import { getUserInfo } from './src/utils/axios';
+
+
+
 const myTheme = {
   backgroundColor: 'rgb(3, 57, 94)',
 };
+
+
+
+
 
 const theme = extendTheme(myTheme);
 
@@ -26,6 +35,22 @@ function App() {
   const socket = io('http://10.0.2.2:3000'); // pour l'émulateur android, utiliser 10.2.2:3000 au lieu de localhost:3000
   const [notifications, setNotifications] = useState(0);
   const [alerts, setAlerts] = useState([]);
+
+
+const [userInfo, setUserInfo] = useState(null);
+
+useEffect(() => {
+  const fetchUserInfo = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+    const userInfo = await getUserInfo(userId);
+    setUserInfo(userInfo);
+  };
+  
+  fetchUserInfo();
+}, []);
+
+
+
 
   //Mise en place des alertes via socket.io
   useEffect(() => {
@@ -78,6 +103,8 @@ function App() {
       value={{
         token: token,
         setToken: setToken,
+        userInfo: userInfo, 
+        setUserInfo: setUserInfo,  
         disconnect: disconnect,
       }}>
       <NativeBaseProvider theme={theme}>

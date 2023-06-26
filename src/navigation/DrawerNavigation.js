@@ -3,19 +3,34 @@ import {
   createDrawerNavigator,
 } from '@react-navigation/drawer';
 import { View, TouchableOpacity, Text } from 'react-native';
-import ProfileScreen from '../screens/SettingScreen';
-import TroisiemeEcran from '../screens/TroisiemeEcran';
-import QuatriemeEcran from '../screens/QuatriemeEcran';
 import NotificationScreen from '../screens/NotificationScreen';
 import TabBarNavigation from './TabBarNavigation';
-import React from 'react';
+import React , {useState, useCallback, useEffect} from 'react';
 import LogoutModal from '../components/LogoutModal';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getNotifications } from '../utils/axios'; // le chemin doit correspondre à l'emplacement de votre fichier axios.js
+
 
 const Drawer = createDrawerNavigator();
 
-const CustomDrawerContent = (props) => {
-  const [modalVisible, setModalVisible] = React.useState(false);
+
+  const CustomDrawerContent = (props) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [notificationCount, setNotificationCount] = useState(0);
+  
+    const loadNotifications = useCallback(() => {
+      getNotifications()
+        .then(data => {
+          setNotificationCount(data.length);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }, []);
+  
+    useEffect(() => {
+      loadNotifications();
+    }, [loadNotifications]);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -25,11 +40,16 @@ const CustomDrawerContent = (props) => {
     return props.state.routes[props.state.index].name === routeName;
   };
 
-  const DrawerButton = ({ label, icon, route }) => (
+  const DrawerButton = ({ label, icon, route, hasBadge }) => (
     <TouchableOpacity onPress={() => props.navigation.navigate(route)}>
-      <View style={{flexDirection: 'row', alignItems: 'center', padding: 10, margin : 10, marginLeft:20,  marginRight:20,  backgroundColor: isFocused(route) ? '#EFF7FF' : 'transparent', borderWidth: isFocused(route) ? 1 : 0, borderColor:'#0F80D7', borderRadius: 10}}>
+      <View style={{flexDirection: 'row', alignItems: 'center', padding: 10, margin: 10, marginLeft:20,  marginRight:20,  backgroundColor: isFocused(route) ? '#EFF7FF' : 'transparent', borderWidth: isFocused(route) ? 1 : 0, borderColor:'#0F80D7', borderRadius: 10}}>
         <Icon name={icon} size={24} color={isFocused(route) ? '#0F80D7' : 'black'} />
         <Text style={{marginLeft: 32, color: isFocused(route) ? '#0F80D7' : 'black', textAlign: 'center', fontWeight:'bold', fontSize:16}}>{label}</Text>
+        {hasBadge && notificationCount > 0 && (
+          <View style={{backgroundColor: 'red', borderRadius: 10, width: 24, height: 24, justifyContent: 'center', alignItems: 'center', marginLeft: 'auto'}}>
+            <Text style={{color: 'white', fontWeight: 'bold'}}>{notificationCount}</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -45,6 +65,7 @@ const CustomDrawerContent = (props) => {
         label="Notification"
         route="Notification"
         icon="notifications-outline"
+        hasBadge={true}
       />
       
       <View style={{marginTop: 'auto'}}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeStackNavigation from './HomeStackNavigation';
 import ProfileScreen from '../screens/SettingScreen';
@@ -6,6 +6,8 @@ import TroisiemeEcran from '../screens/TroisiemeEcran';
 import QuatriemeEcran from '../screens/QuatriemeEcran';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CustomHeader from '../components/CustomHeader';
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -37,7 +39,8 @@ const TabBarNavigation = () => {
           alignItems: "center", 
           padding: 10
         },
-        header: () => <CustomHeader/>,
+        header: () => <CustomHeader/>
+        ,
       })}
     >
       <Tab.Screen name="HomeStackNavigation" component={HomeStackNavigation} options={{ tabBarLabel: () => null }}/>
