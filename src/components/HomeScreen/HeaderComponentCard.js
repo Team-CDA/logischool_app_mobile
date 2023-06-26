@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Card } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomMediumButton from '../Buttons/CustomMediumButton';
+import { useNavigation } from '@react-navigation/native'; // Importez useNavigation
 
 const HeaderComponentCard = () => {
     const [edtDate, setEdtDate] = useState('');
+    const navigation = useNavigation(); // Utilisez useNavigation
 
   useEffect(() => {
     const date = new Date();
@@ -14,9 +16,10 @@ const HeaderComponentCard = () => {
   }, []);
 
   const handlePress = () => {
-    // Ajouter la navigation par la suite  
-    console.log('Yo man');
+    navigation.navigate('CalendarScreen'); // Naviguer vers CalendarPage
   };
+
+  // ...
 
   return (
     <View>
@@ -31,7 +34,7 @@ const HeaderComponentCard = () => {
                     textColor="#FFFFFF"
                     borderColor="#0F5C2E"
                     iconName="double-arrow"
-                    onPress={handlePress}
+                    onPress={handlePress} // Utilisez handlePress pour naviguer
                 />
             </View>
             <View style={styles.edtImgContainer}>

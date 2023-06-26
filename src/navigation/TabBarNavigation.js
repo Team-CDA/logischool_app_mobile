@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
+import HomeStackNavigation from './HomeStackNavigation';
 import ProfileScreen from '../screens/SettingScreen';
 import TroisiemeEcran from '../screens/TroisiemeEcran';
 import QuatriemeEcran from '../screens/QuatriemeEcran';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CustomHeader from '../components/CustomHeader';
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -16,7 +18,7 @@ const TabBarNavigation = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'HomeStackNavigation') {
             iconName = focused
               ? 'home'
               : 'home-outline';
@@ -37,10 +39,11 @@ const TabBarNavigation = () => {
           alignItems: "center", 
           padding: 10
         },
-        header: () => <CustomHeader/>,
+        header: () => <CustomHeader/>
+        ,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: () => null }}/>
+      <Tab.Screen name="HomeStackNavigation" component={HomeStackNavigation} options={{ tabBarLabel: () => null }}/>
       <Tab.Screen name="TroisiemeEcran" component={TroisiemeEcran} options={{ tabBarLabel: () => null }}/>
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: () => null }}/>
       <Tab.Screen name="QuatriemeEcran" component={QuatriemeEcran} options={{ tabBarLabel: () => null }}/>
