@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { List, Title, Divider } from "react-native-paper";
-import apiService from "../../utils/apiService";
+import axiosInstance from "../utils/interceptor";
 
 const CantineScreen = () => {
   const [menus, setMenus] = useState([]);
@@ -9,7 +9,7 @@ const CantineScreen = () => {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        
+        const response = await axiosInstance.get("/menus");
         if (Array.isArray(response.data)) {
           setMenus(response.data);
         } else {

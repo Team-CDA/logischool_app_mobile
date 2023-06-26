@@ -5,15 +5,12 @@ import {
 import { View, TouchableOpacity, Text } from 'react-native';
 import NotificationScreen from '../screens/NotificationScreen';
 import TabBarNavigation from './TabBarNavigation';
-<<<<<<< HEAD
 import CantineScreen from '../screens/CantineScreen';
-=======
 import React , {useState, useCallback, useEffect} from 'react';
 import LogoutModal from '../components/LogoutModal';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getNotifications } from '../utils/axios'; // le chemin doit correspondre à l'emplacement de votre fichier axios.js
 
->>>>>>> 40151c1f138dc663dc09f1ad66146a01c405cc82
 
 const Drawer = createDrawerNavigator();
 
@@ -96,11 +93,8 @@ function DrawerNavigation() {
       drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen name="Accueil" component={TabBarNavigation} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
-<<<<<<< HEAD
       <Drawer.Screen name="Cantine" component={CantineScreen} />
 
-=======
->>>>>>> 40151c1f138dc663dc09f1ad66146a01c405cc82
     </Drawer.Navigator>
   );
 }
