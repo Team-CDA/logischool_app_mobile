@@ -5,7 +5,7 @@ import CalendarScreen from '../screens/CalendarScreen';
 import CantineScreen from '../screens/CantineScreen';
 
 const Stack = createStackNavigator();
-
+l
 const HomeStackNavigation = () => {
   return (
     <Stack.Navigator initialRouteName="Home">
@@ -20,7 +20,7 @@ const HomeStackNavigation = () => {
         options={{ title: 'Accueil' , headerShown:false}}
       />
       <Stack.Screen 
-        name="Cantine" 
+        name="CantineScreen"
         component={CantineScreen} 
         options={{ title: 'Menu cantine' }}
       />
