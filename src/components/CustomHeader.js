@@ -1,6 +1,6 @@
 import React, { useState, useEffect , useContext} from 'react';
 import { View } from 'react-native';
-import { Text } from 'native-base';
+import { Text, Badge } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { responsiveHeight } from 'react-native-responsive-dimensions';
 import { useNavigation } from '@react-navigation/native';
@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserContext from '../utils/context/UserContext'; 
 
 const CustomHeader = () => {
-  const {userInfo: contextUserInfo} = useContext(UserContext);
+  const {userInfo: contextUserInfo, alerts} = useContext(UserContext);
   const [userInfo, setUserInfo] = useState(contextUserInfo);
   
   useEffect(() => {
@@ -25,26 +25,19 @@ const CustomHeader = () => {
           <Icon name="school" size={30} color="#16385B" />
           <Text style={{ color: '#16385B', fontSize: 20, marginLeft: 10, fontWeight:'bold' }}>Logischool</Text>
         </View>
-        <Icon 
-          name="menu-open" 
-          size={28} 
-          color="#16385B" 
-          onPress={() => navigation.openDrawer()}
-        />
-      </View>
-      <View>
-        <View style={{ alignItems: 'center' , flexDirection:'row', justifyContent:'center',    backgroundColor:'white'}}>
-          <View style={{width: 10, height: 10, borderRadius: 25, backgroundColor: 'green' }} />
-          <Text style={{ color: '#16385B', fontSize: 14, marginLeft:5 }}>
-            {userInfo ? `${userInfo.firstname} ${userInfo.lastname}` : "Chargement ..."}
-          </Text>  
+        <View>
+          {alerts.length > 0 && (
+            <Badge style={{ position: 'absolute', right: -10, top: -10 }}>
+              <Text>{alerts.length}</Text>
+            </Badge>
+          )}
+          <Icon 
+            name="menu-open" 
+            size={28} 
+            color="#16385B" 
+            onPress={() => navigation.openDrawer()}
+          />
         </View>
-        <View style={{ alignItems: 'center' , flexDirection:'row', justifyContent:'center',  paddingBottom:15, backgroundColor:'white'}}>
-          <Text style={{ color: '#16385B', fontSize: 12, fontWeight:'bold'}}>
-              Classe : {userInfo && userInfo.classes && userInfo.classes[0] ? ` ${userInfo.classes[0].class_type.class_type} - ${userInfo.classes[0].name}` : "Chargement ..."}
-          </Text>  
-        </View>
-
       </View>
     </>
   );

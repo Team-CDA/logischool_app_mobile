@@ -7,31 +7,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NotificationScreen = () => {
   const { alerts, setAlerts } = useContext(UserContext);
-  const [selectedAlert, setSelectedAlert] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
   const navigation = useNavigation();
 
-  const handleDelete = (item) => {
-    setSelectedAlert(item);
-    setModalVisible(true);
+  const handleDelete = async (item) => {
+    // Suppression de l'alerte du contexte
+    const updatedAlerts = alerts.filter(alert => alert.id !== item.id);
+    setAlerts(updatedAlerts);
+    
+    // Suppression de l'alerte du localStorage
+    await AsyncStorage.setItem('alerts', JSON.stringify(updatedAlerts));
   };
 
   const handlePin = (item) => {
     // Implémentez la logique d'épinglage ici
   };
-
-  const confirmDelete = async () => {
-    // Suppression de l'alerte du contexte
-    const updatedAlerts = alerts.filter(alert => alert.id !== selectedAlert.id);
-    setAlerts(updatedAlerts);
-    setModalVisible(false);
-    
-    // Suppression de l'alerte du localStorage
-    await AsyncStorage.setItem('alerts', JSON.stringify(updatedAlerts));
-  };
-  
-  
 
   const renderAlert = ({ item }) => {
     const renderRightAction = (progress, dragX) => {
@@ -55,7 +44,7 @@ const NotificationScreen = () => {
                 opacity: opacity,
               },
             ]}>
-            <Text style={styles.actionText}>Supprimer</Text>
+            <Text style={styles.actionText}>SUPPRIMER</Text>
           </Animated.View>
         </RectButton>
       );
@@ -80,28 +69,14 @@ const NotificationScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginTop: 20, marginBottom: 20 }}>Notifications</Text>
       <FlatList
         data={alerts}
         renderItem={renderAlert}
         keyExtractor={(item) => item.id.toString()}  
         ListEmptyComponent={renderEmptyList}
       />
-      <Button title="Fermer" onPress={() => navigation.goBack()} />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Confirmer la suppression de l'alerte?</Text>
-            <Button onPress={confirmDelete} title="Confirmer" />
-            <Button onPress={() => setModalVisible(false)} title="Annuler" />
-          </View>
-        </View>
-      </Modal>
+      <Button title="Fermer" onPress={() => navigation.goBack()} style={styles.closeButton} />
     </View>
   );
 };
@@ -117,31 +92,12 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 20,
     },
-    centeredView: {
+  closeButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
-    },
-    modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-    width: 0,
-    height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-    },
-    modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-    }
-    });
-    
-    export default NotificationScreen;
+  },
+  });
+
+export default NotificationScreen;

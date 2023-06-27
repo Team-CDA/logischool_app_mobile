@@ -91,7 +91,7 @@ const NotificationScreen = () => {
         refreshing={refreshing}
         onRefresh={loadNotifications}
       />
-      <Button title="Fermer" onPress={() => navigation.goBack()} />
+      <Button title="Fermer" onPress={() => navigation.goBack()}/>
       <Modal
         animationType="slide"
         transparent={true}
