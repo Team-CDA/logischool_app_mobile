@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, Animated, StyleSheet, Modal, Button } from 'react-native';
+import { View, Text, FlatList, Animated, StyleSheet, Modal, Button, TouchableOpacity } from 'react-native';
 import { Swipeable, RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import UserContext from '../utils/context/UserContext';
@@ -76,7 +76,9 @@ const NotificationScreen = () => {
         keyExtractor={(item) => item.id.toString()}  
         ListEmptyComponent={renderEmptyList}
       />
-      <Button title="Fermer" onPress={() => navigation.goBack()} style={styles.closeButton} />
+      <TouchableOpacity style={styles.closeButton} title="Fermer" onPress={() => navigation.goBack()}>
+        <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: 'bold', marginTop: 20, marginBottom: 20 }}>FERMER</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -93,10 +95,9 @@ const styles = StyleSheet.create({
     padding: 20,
     },
   closeButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#03395E',
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
   },
   });
 
