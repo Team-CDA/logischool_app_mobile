@@ -114,7 +114,7 @@ const HomeScreen = ({navigation}) => {
                     navigation.navigate('#');
                     break;
                   case 'Professeurs':
-                    navigation.navigate('#');
+                    navigation.navigate('ProfScreen');
                     break;
                   case 'Devoirs':
                     navigation.navigate('#');
