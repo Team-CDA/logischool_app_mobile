@@ -1,7 +1,6 @@
 import axiosInstance from './interceptor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// cette route vers l'API retourne un token si l'authentification est réussie
 export const authenticateUser = async values => {
   try {
     console.log('values : ', values);
@@ -10,10 +9,7 @@ export const authenticateUser = async values => {
       console.log('le fameux token :', response.data.token);
       await AsyncStorage.setItem('token', response.data.token);
       await AsyncStorage.setItem('userId', response.data.userInfo.id.toString());
-      await AsyncStorage.setItem(
-        'user',
-        JSON.stringify(response.data.userInfo),
-      );
+      await AsyncStorage.setItem('user', JSON.stringify(response.data.userInfo));
       return response.data;
     } else {
       throw new Error("Erreur lors de l'authentification");
@@ -24,17 +20,19 @@ export const authenticateUser = async values => {
 };
 
 
-// ----------- Récuperer les infos de l'utilisateur : 
 
+//---------------------------- Récupération des Infos de l'utilisateur 
 
-export const getUserInfo = async userId => {
+export const getUserInfo = async () => {
   try {
+    const userId = await AsyncStorage.getItem('userId');
+    if (!userId) throw new Error("L'ID de l'utilisateur est undefined");
+
     const response = await axiosInstance.get(`/users/${userId}`);
     if (response.status === 200) {
       console.log('ok bb ');
       return response.data;
     } else {
-      
       throw new Error("Erreur lors de la récupération des informations utilisateur");
     }
   } catch (error) {
@@ -42,12 +40,9 @@ export const getUserInfo = async userId => {
     console.log('erreur bb');
   }
 };
-// -----------------------------------------------
 
 
-
-// ----------- Récuperer les notifications : 
-
+//---------------------------- Récupération des Notifications
 
 export const getNotifications = async () => {
   try {
@@ -63,4 +58,23 @@ export const getNotifications = async () => {
 };
 
 
-// -----------------------------------------------
+
+//---------------------------- Récupération de L'emploi du temps de l'utilisateur connecté
+
+
+export const getSchedules = async () => {
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    if (!userId) throw new Error("L'ID de l'utilisateur n'est pas reconnu bb");
+
+    const response = await axiosInstance.get(`/schedule/${userId}`);
+    if (response.status === 200) {
+      console.log(response.data);
+      return response.data;
+    } else {
+      throw new Error("Erreur lors de la récupération de l'emploi du temps");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};

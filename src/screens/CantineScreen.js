@@ -1,14 +1,20 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+ 
+import React, { useEffect } from 'react';
+import { Text } from 'native-base';
+import { getSchedules } from '../utils/axios'
 
-const CantineScreen = () => {
+function CantineScreen() {
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const schedules = await getSchedules();
+      console.log(schedules);
+    };
+    fetchSchedules();
+  }, []); 
+
   return (
-    <View>
-      <Text>CantineScreen</Text>
-    </View>
-  )
+     <Text>ok</Text>
+  );
 }
 
-export default CantineScreen
-
-const styles = StyleSheet.create({})
+export default CantineScreen;
