@@ -21,7 +21,7 @@ const NotificationScreen = () => {
   const handlePin = (item) => {
     // Implémentez la logique d'épinglage ici
   };
-
+  
   const renderAlert = ({ item }) => {
     const renderRightAction = (progress, dragX) => {
       const scale = dragX.interpolate({

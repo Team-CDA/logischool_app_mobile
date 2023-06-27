@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, Animated, StyleSheet, Modal, Button } from 'react-native';
 import { getNotifications } from '../utils/axios';
 import { Swipeable, RectButton } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 const NotificationScreen = () => {
   const [notifications, setNotifications] = useState([]);
@@ -43,6 +43,7 @@ const NotificationScreen = () => {
     setModalVisible(false);
     // Appel à l'API pour supprimer la notification ici
   };
+
 
   const renderNotification = ({ item }) => {
     const renderRightAction = (progress, dragX) => {

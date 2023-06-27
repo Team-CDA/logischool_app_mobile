@@ -3,15 +3,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import DrawerNavigation from './src/navigation/DrawerNavigation';
 import {
   NativeBaseProvider,
-  Text,
-  Box,
   extendTheme,
-  Modal,
-  Button,
 } from 'native-base';
 import LoginForm from './src/components/LoginForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Pressable} from 'react-native';
 import UserContext from './src/utils/context/UserContext';
 import io from 'socket.io-client';
 
@@ -46,7 +41,7 @@ useEffect(() => {
   fetchUserInfo();
 }, []);
 
-  //Mise en place des alertes via socket.io
+  // récupération des alertes via socket.io
   useEffect(() => {
     socket.on('newAlert', (alert, socketGroups) => {
       console.log('Nouvelle alerte reçue :', alert);
