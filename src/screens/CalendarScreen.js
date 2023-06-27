@@ -25,7 +25,7 @@ const subjectColors = {
 };
 
 // Une fonction asynchrone pour obtenir les éléments à partir de l'API 
-const fetchItems = async () => {
+const fetchItems = async (day) => {
   try {
     // Appeler l'API
     const apiItems = await getSchedules();
@@ -48,6 +48,9 @@ const fetchItems = async () => {
           start,
           end,
           color,
+          classType: item.classes_name,
+          room: item.rooms_name,
+          roomType: item.room_type,
         });
       } else {
         newItems[date] = [{
@@ -55,52 +58,53 @@ const fetchItems = async () => {
           start,
           end,
           color,
+          classType: item.classes_name,
+          room: item.rooms_name,
+          roomType: item.room_type,
         }];
       }
     }
 
-    // Ajouter des notes pour les week-ends 
-    addWeekendNotes(newItems);
+    // Ajouter des notes pour le week-end du jour actuel 
+    addWeekendNotes(newItems, day);
     return newItems;
   } catch (error) {
     console.error(error);
   }
 };
 
-// Une fonction pour ajouter des notes pour les week-ends 
-const addWeekendNotes = (items) => {
-  for (let i = -90; i < 90; i++) {
-    const time = moment().add(i, 'days');
-    const strTime = time.format('YYYY-MM-DD');
 
-    // Si le jour est un week-end, ajouter une note
-    if (time.weekday() === 5 || time.weekday() === 6) {
-      if (items[strTime]) {
-        items[strTime].push({
-          name: 'Pas de cours à cette date',
-          start: '',
-          end: '',
-          color: 'gray',
-        });
-      } else {
-        items[strTime] = [{
-          name: 'Pas de cours à cette date',
-          start: '',
-          end: '',
-          color: 'gray',
-        }];
-      }
+// Une fonction pour ajouter des notes pour le week-end 
+const addWeekendNotes = (items, day) => {
+  const time = moment(day, 'YYYY-MM-DD');
+  const strTime = time.format('YYYY-MM-DD');
+
+  // Si le jour est un week-end, ajouter une note
+  if (time.weekday() === 5 || time.weekday() === 6) {
+    if (items[strTime]) {
+      items[strTime].push({
+        name: 'Pas de cours à cette date',
+        start: '',
+        end: '',
+        color: 'gray',
+      });
+    } else {
+      items[strTime] = [{
+        name: 'Pas de cours à cette date',
+        start: '',
+        end: '',
+        color: 'gray',
+      }];
     }
   }
 };
-
 
 // Le composant principal 
 const CalendarScreen = () => {
   // Déclarer les hooks d'état pour les éléments, l'élément sélectionné, le jour sélectionné et l'indicateur de rafraîchissement 
   const [items, setItems] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(moment().format('YYYY-MM-DD'));
   const [refreshing, setRefreshing] = useState(false);
   
   // Référence à la feuille inférieure 
@@ -111,22 +115,26 @@ const CalendarScreen = () => {
 
   // Appeler la fonction fetchItems au montage du composant 
   useEffect(() => {
-    fetchItems().then(setItems);
+    fetchItems(selectedDay).then(setItems);
   }, []);
 
   // Fonction pour rafraîchir les éléments 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    fetchItems().then(newItems => {
+    fetchItems(selectedDay).then(newItems => {
       setItems(newItems);
       setRefreshing(false);
     });
-  }, []);
+  }, [selectedDay]);
 
   // Fonction pour gérer le clic sur un jour 
   const onDayPress = (day) => {
     setSelectedDay(day.dateString);
+    fetchItems(day.dateString).then(newItems => {
+      setItems(newItems);
+    });
   };
+
 
   // Fonction pour ouvrir la feuille de bas de page 
   const openBottomSheetModal = (item) => {
@@ -146,7 +154,7 @@ const CalendarScreen = () => {
         markedDates[strTime] = {
           selected: true,
           marked: true,
-          selectedColor: items[strTime].some(i => i.name === 'Pas de cours à cette date') ? 'gray' : '#ff6347',
+          selectedColor: items[strTime].some(i => i.name === 'Pas de cours à cette date') ? 'gray' : '#800000',
           note: items[strTime].some(i => i.name === 'Pas de cours à cette date') ? 'Pas de cours à cette date' : null,
         };
       }
@@ -182,19 +190,23 @@ const CalendarScreen = () => {
             </TouchableOpacity>
           )}
         />
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          snapPoints={snapPoints}
-          dismissOnPanDown={true}
-          dismissOnOverlayPress={true}
-        >
-          {selectedItem && (
-            <View style={styles.contentContainer}>
-              <Text style={styles.modalText}>{selectedItem.name}</Text>
-              <Text style={styles.modalText}>{selectedItem.start} - {selectedItem.end}</Text>
-            </View>
-          )}
-        </BottomSheetModal>
+       <BottomSheetModal
+        ref={bottomSheetModalRef}
+        snapPoints={snapPoints}
+        dismissOnPanDown={true}
+        dismissOnOverlayPress={true}
+      >
+        {selectedItem && (
+          <View style={styles.contentContainer}>
+            <Text style={styles.modalText}>{selectedItem.name}</Text>
+            <Text style={styles.modalText}>{selectedItem.start} - {selectedItem.end}</Text>
+            <Text style={styles.modalText}>Classe : {selectedItem.classType}</Text>
+            <Text style={styles.modalText}>Salle : {selectedItem.room}</Text>
+            <Text style={styles.modalText}>Type de Salle : {selectedItem.roomType}</Text>
+          </View>
+        )}
+      </BottomSheetModal>
+
       </ScrollView>
     </BottomSheetModalProvider>
   );
