@@ -24,10 +24,6 @@ const myTheme = {
   backgroundColor: 'rgb(3, 57, 94)',
 };
 
-
-
-
-
 const theme = extendTheme(myTheme);
 
 function App() {
@@ -43,31 +39,39 @@ useEffect(() => {
   const fetchUserInfo = async () => {
     const userId = await AsyncStorage.getItem('userId');
     const userInfo = await getUserInfo(userId);
+    console.log('Infos user', userInfo);
     setUserInfo(userInfo);
   };
   
   fetchUserInfo();
 }, []);
 
-
-
-
   //Mise en place des alertes via socket.io
   useEffect(() => {
-    socket.on('newAlert', alert => {
+    socket.on('newAlert', (alert, socketGroups) => {
       console.log('Nouvelle alerte reçue :', alert);
-      setNotifications(prevNotifications => prevNotifications + 1);
-      setAlerts(prevAlerts => {
-        const updatedAlerts = [...prevAlerts, alert];
-        AsyncStorage.setItem('alerts', JSON.stringify(updatedAlerts));
-        return updatedAlerts;
-      });
+      console.log('Groupes associés :', socketGroups);
+      console.log('Infos utilisateur', userInfo);
+      
+      const userGroupIds = userInfo.groups.map(group => group.id);
+      console.log('Groupes de l\'utilisateur', userGroupIds);
+      const isAlertRelevant = socketGroups.some(id => userGroupIds.includes(id));
+      console.log('Alerte pertinente ?', isAlertRelevant);
+
+      if (isAlertRelevant) {
+        setNotifications(prevNotifications => prevNotifications + 1);
+        setAlerts(prevAlerts => {
+          const updatedAlerts = [...prevAlerts, alert];
+          AsyncStorage.setItem('alerts', JSON.stringify(updatedAlerts));
+          return updatedAlerts;
+        });
+      }
     });
 
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     async function checkStoredAlerts() {

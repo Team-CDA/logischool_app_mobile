@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native"; // Add Text
 import { List, Title, Divider, Card, Paragraph } from "react-native-paper";
 import axiosInstance from "../utils/interceptor";
 import { Agenda } from 'react-native-calendars';
@@ -20,7 +20,7 @@ const CantineScreen = () => {
           });
           setMenus(newMenus);
         } else {
-          console.error("Erreur lors de la récupération des menus");
+          // console.error("Erreur lors de la récupération des menus");
           setMenus([]);
         }
       } catch (error) {
@@ -56,6 +56,8 @@ const CantineScreen = () => {
             </Card.Content>
           </Card>
         )}
+        // Add the following line
+        renderEmptyData={() => <Text style={{ textAlign: 'center', color: 'grey', paddingTop: 10 }}>Le menu n'est pas encore disponible pour cette date.</Text>}
       />
     </View>
   );
