@@ -1,10 +1,11 @@
-import React, { useState, useRef, useMemo , useEffect} from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import moment from 'moment';
 import 'moment/locale/fr';
 import { LocaleConfig } from 'react-native-calendars';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { getSchedules } from '../utils/axios';  
 
 LocaleConfig.locales['fr'] = {
   monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
@@ -16,68 +17,55 @@ LocaleConfig.locales['fr'] = {
 LocaleConfig.defaultLocale = 'fr';
 moment.locale('fr');
 
-const originalItems = {
-  '2023-06-16': [
-    { 
-      name: 'Mathématiques', 
-      start: '8:00', 
-      end: '10:00',
-      color: '#ff6347'
-    }, 
-    { 
-      name: 'Anglais',
-      start: '11:00', 
-      end: '12:00',
-      color: '#3cb371'
+const fetchItems = async () => {
+  try {
+    const apiItems = await getSchedules();
+    const newItems = {};
+
+    for (const item of apiItems) {
+      const date = moment(item.lesson_date).format('YYYY-MM-DD');
+      const start = moment(item.lesson_date).format('HH:mm');
+      const end = moment(item.lesson_date).add(item.duration, 'minutes').format('HH:mm');
+
+      if (newItems[date]) {
+        newItems[date].push({
+          name: item.subject_name,
+          start,
+          end,
+          color: '#ff6347',  // Remplacez cette valeur fixe par une couleur dynamique si vous le souhaitez
+        });
+      } else {
+        newItems[date] = [{
+          name: item.subject_name,
+          start,
+          end,
+          color: '#ff6347',  // Remplacez cette valeur fixe par une couleur dynamique si vous le souhaitez
+        }];
+      }
     }
-  ],
-  '2023-06-14': [
-    { 
-      name: 'Histoire', 
-      start: '9:00', 
-      end: '11:00',
-      color: '#1e90ff'
-    },
-    { 
-      name: 'Sport',
-      start: '13:00', 
-      end: '15:00',
-      color: '#9370db'
-    }
-  ],
-  '2023-06-15': [
-    { 
-      name: 'Histoire', 
-      start: '9:00', 
-      end: '11:00',
-      color: '#1e90ff'
-    },
-    { 
-      name: 'Sport',
-      start: '13:00', 
-      end: '15:00',
-      color: '#9370db'
-    }
-  ],
+
+    addWeekendNotes(newItems);
+    return newItems;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
-
-
-const addWeekendNotes = () => {
+const addWeekendNotes = (items) => {
   for (let i = -90; i < 90; i++) {
     const time = moment().add(i, 'days');
     const strTime = time.format('YYYY-MM-DD');
 
     if (time.weekday() === 5 || time.weekday() === 6) { // Check if it's a weekend
-      if (originalItems[strTime]) {
-        originalItems[strTime].push({
+      if (items[strTime]) {
+        items[strTime].push({
           name: 'Pas de cours à cette date',
           start: '',
           end: '',
           color: 'gray',
         });
       } else {
-        originalItems[strTime] = [{
+        items[strTime] = [{
           name: 'Pas de cours à cette date',
           start: '',
           end: '',
@@ -87,26 +75,39 @@ const addWeekendNotes = () => {
     }
   }
 };
-addWeekendNotes();
-
 
 const CalendarScreen = () => {
-  const [items, setItems] = useState(originalItems);
+  const [items, setItems] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(null); // Ajouter cette ligne
+  const [isRefreshing, setIsRefreshing] = useState(false); // Nouveau
   const bottomSheetModalRef = useRef(null);
 
   const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
 
+  const fetchItemsAndSetState = async () => {
+    setIsRefreshing(true);
+    const fetchedItems = await fetchItems();
+    setItems(fetchedItems);
+    setIsRefreshing(false);
+  }
+
+  useEffect(() => {
+    fetchItemsAndSetState();
+  }, []);
+
+  const onRefresh = () => {
+    fetchItemsAndSetState();
+  };
+
   const onDayPress = (day) => {
-    const selectedDayItems = originalItems[day.dateString];
-    setItems({ [day.dateString]: selectedDayItems });
+    setSelectedDay(day.dateString); // Modifier cette ligne
   };
 
   const openBottomSheetModal = (item) => {
     setSelectedItem(item);
     bottomSheetModalRef.current.present();
   };
-
 
   const getMarkedDates = () => {
     let markedDates = {};
@@ -115,37 +116,51 @@ const CalendarScreen = () => {
       const time = moment().add(i, 'days');
       const strTime = time.format('YYYY-MM-DD');
   
-      if (time.weekday() === 5 || time.weekday() === 6) {
+      if (items[strTime]) {
         markedDates[strTime] = {
           selected: true,
           marked: true,
-          selectedColor: 'gray',
-          note: 'Pas de cours à cette date',
+          selectedColor: items[strTime].some(i => i.name === 'Pas de cours à cette date') ? 'gray' : '#ff6347',
+          note: items[strTime].some(i => i.name === 'Pas de cours à cette date') ? 'Pas de cours à cette date' : null,
         };
       }
     }
   
     return markedDates;
   };
- 
+
+  const renderItems = () => {
+    if (!selectedDay) {
+      return items;
+    }
+    
+    return { [selectedDay]: items[selectedDay] };
+  }
 
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
-        <Agenda
-          firstDay={1}
-          items={items}
-          onDayPress={onDayPress}
-          markedDates={getMarkedDates()}
-          renderItem={(item, firstItemInDay) => (
-            <TouchableOpacity onPress={() => openBottomSheetModal(item)}>
-              <View style={[styles.item, {backgroundColor: item.name === 'Pas de cours à cette date' ? 'gray' : item.color}]}>
-                <Text style={styles.itemTextTitle}>{item.name}</Text>
-                <Text style={styles.itemText}>{item.start} - {item.end}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
+        <ScrollView
+          contentContainerStyle={{ flex: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
+        >
+          <Agenda
+            firstDay={1}
+            items={renderItems()} // Modifier cette ligne
+            onDayPress={onDayPress}
+            markedDates={getMarkedDates()}
+            renderItem={(item, firstItemInDay) => (
+              <TouchableOpacity onPress={() => openBottomSheetModal(item)}>
+                <View style={[styles.item, {backgroundColor: item.name === 'Pas de cours à cette date' ? 'gray' : item.color}]}>
+                  <Text style={styles.itemTextTitle}>{item.name}</Text>
+                  <Text style={styles.itemText}>{item.start} - {item.end}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </ScrollView>
         <BottomSheetModal
           ref={bottomSheetModalRef}
           snapPoints={snapPoints}
@@ -156,8 +171,7 @@ const CalendarScreen = () => {
             <View style={styles.contentContainer}>
               <Text style={styles.modalText}>{selectedItem.name}</Text>
               <Text style={styles.modalText}>{selectedItem.start} - {selectedItem.end}</Text>
-              {/* Add more details... */}
-            </View>
+             </View>
           )}
         </BottomSheetModal>
       </View>
@@ -203,5 +217,3 @@ const styles = StyleSheet.create({
 });
 
 export default CalendarScreen;
-
-
