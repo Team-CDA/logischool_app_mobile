@@ -78,3 +78,21 @@ export const getSchedules = async () => {
     console.error(error);
   }
 };
+
+
+
+//---------------------------- Envoi d'un document scanné
+
+export const sendScannedDocument = async (image) => {
+  try {
+    const response = await axiosInstance.post('/upload', { image });
+    if (response.status === 200) {
+      console.log(response.data);
+      return response.data;
+    } else {
+      throw new Error("Erreur lors de l'envoi du document scanné");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
