@@ -11,6 +11,7 @@ const HomeworkScreen = () => {
     const [userClass, setUserClass] = useState(null);
     const [subjectId, setSubjectId] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [displayType, setDisplayType] = useState('all');
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -67,9 +68,9 @@ const HomeworkScreen = () => {
     const renderItem = ({item}) => (
         <View style={styles.item}>
             <Text style={styles.title}>{item.name}</Text>
-            {item.course_image && (
+            {(displayType === 'all' || displayType === 'courses') && item.course_image ? (
                 <View style={styles.course}>
-                    <Text style={styles.courseTitle}>Course</Text>
+                    <Text style={styles.courseTitle}>Cours</Text>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={() => {
@@ -80,41 +81,53 @@ const HomeworkScreen = () => {
                         <Text style={styles.buttonText}>Télécharger le cours</Text>
                     </TouchableOpacity>
                 </View>
-            )}
-            {item.homework_image && (
-                <View style={styles.homework}>
-                    <Text style={styles.homeworkTitle}>Homework</Text>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => {
-                            // TODO: Handle file download here
-                        }}
-                    >
-                        <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
-                        <Text style={styles.buttonText}>Télécharger le devoir</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-            {item.correction_image && (
-                <View style={styles.correction}>
-                    <Text style={styles.correctionTitle}>Correction</Text>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => {
-                            // TODO: Handle file download here
-                        }}
-                    >
-                        <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
-                        <Text style={styles.buttonText}>Télécharger la correction</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+            ) : null}
+            {(displayType === 'all' || displayType === 'homeworks') && (item.homework_image || item.correction_image) ? (
+                <>
+                    {item.homework_image && (
+                        <View style={styles.homework}>
+                            <Text style={styles.homeworkTitle}>Devoirs</Text>
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={() => {
+                                    // TODO: Handle file download here
+                                }}
+                            >
+                                <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
+                                <Text style={styles.buttonText}>Télécharger le devoir</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    {item.correction_image && (
+                        <View style={styles.correction}>
+                            <Text style={styles.correctionTitle}>Corrections</Text>
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={() => {
+                                    // TODO: Handle file download here
+                                }}
+                            >
+                                <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
+                                <Text style={styles.buttonText}>Télécharger la correction</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </>
+            ) : null}
         </View>
     );
+    
+    
+    
+    
     
 
     const handleSubjectChange = (value) => {
         setSubjectId(value);
+    };
+
+    const handleDisplayTypeChange = (value) => {
+        setDisplayType(value);
     };
 
     return (
@@ -123,6 +136,11 @@ const HomeworkScreen = () => {
             {subjects.map(subject => (
             <Picker.Item key={subject.id} label={subject.subject_name} value={subject.id} />
             ))}
+        </Picker>
+        <Picker selectedValue={displayType} onValueChange={handleDisplayTypeChange}>
+            <Picker.Item key="all" label="Tout afficher" value="all" />
+            <Picker.Item key="courses" label="Cours uniquement" value="courses" />
+            <Picker.Item key="homeworks" label="Devoirs et corrections" value="homeworks" />
         </Picker>
         <FlatList
             data={data}
