@@ -3,6 +3,7 @@ import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import axiosInstance from '../utils/interceptor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const HomeworkScreen = () => {
     const [data, setData] = useState([]);
@@ -65,24 +66,56 @@ const HomeworkScreen = () => {
 
     const renderItem = ({item}) => (
         <View style={styles.item}>
-        <Text style={styles.title}>{item.name}</Text>
-        <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-            // TODO: Handle file download here
-            }}>
-            <Text style={styles.buttonText}>Download</Text>
-        </TouchableOpacity>
+            <Text style={styles.title}>{item.name}</Text>
+            {item.course_image && (
+                <View style={styles.course}>
+                    <Text style={styles.courseTitle}>Course</Text>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => {
+                            // TODO: Handle file download here
+                        }}
+                    >
+                        <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
+                        <Text style={styles.buttonText}>Télécharger le cours</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            {item.homework_image && (
+                <View style={styles.homework}>
+                    <Text style={styles.homeworkTitle}>Homework</Text>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => {
+                            // TODO: Handle file download here
+                        }}
+                    >
+                        <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
+                        <Text style={styles.buttonText}>Télécharger le devoir</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            {item.correction_image && (
+                <View style={styles.correction}>
+                    <Text style={styles.correctionTitle}>Correction</Text>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => {
+                            // TODO: Handle file download here
+                        }}
+                    >
+                        <Icon name="download" size={16} color="#fff" style={styles.buttonIcon} />
+                        <Text style={styles.buttonText}>Télécharger la correction</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
+    
 
     const handleSubjectChange = (value) => {
         setSubjectId(value);
     };
-
-    // Split data into courses and homeworks
-    const courses = data.filter(item => item.course_image);
-    const homeworks = data.filter(item => item.homework_image);
 
     return (
         <View style={styles.container}>
@@ -91,48 +124,79 @@ const HomeworkScreen = () => {
             <Picker.Item key={subject.id} label={subject.subject_name} value={subject.id} />
             ))}
         </Picker>
-        <Text style={styles.title}>Courses</Text>
         <FlatList
-            data={courses}
+            data={data}
             renderItem={renderItem}
-            keyExtractor={item => `course_${item.id}`}
-        />
-        <Text style={styles.title}>Homework</Text>
-        <FlatList
-            data={homeworks}
-            renderItem={renderItem}
-            keyExtractor={item => `homework_${item.id}`}
+            keyExtractor={item => item.id.toString()}
         />
         </View>
     );
 };
 
-
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
     },
     item: {
-        backgroundColor: '#f9c2ff',
+        backgroundColor: '#ffffff',
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 2,
     },
     title: {
         fontSize: 20,
     },
+    course: {
+        marginTop: 10,
+    },
+    courseTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    homeworkTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    correctionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    homework: {
+        marginTop: 10,
+    },
+    correction: {
+        marginTop: 10,
+    },
     button: {
-        backgroundColor: '#000',
+        backgroundColor: '#03395E',
         paddingHorizontal: 10,
         paddingVertical: 5,
+        marginTop: 5,
+        borderRadius: 4,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     buttonText: {
         fontSize: 16,
         color: '#fff',
     },
+    buttonIcon: {
+        marginRight: 10,
+    },
 });
 
+
+
 export default HomeworkScreen;
+
