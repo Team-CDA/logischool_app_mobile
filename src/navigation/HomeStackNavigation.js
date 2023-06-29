@@ -30,6 +30,13 @@ const HomeStackNavigation = () => {
         component={CantineScreen}
         options={{title: 'Menu cantine'}}
       />
+      <Stack.Screen
+        name="HomeworkScreen"
+        component={HomeworkScreen}
+        options={{ title: 'Devoirs' }}
+      />
+      
+
     </Stack.Navigator>
   );
 };

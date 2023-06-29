@@ -36,12 +36,13 @@ const CustomDrawerContent = (props) => {
   };
 
   const DrawerButton = ({ label, icon, route, hasBadge }) => (
+    console.log(alerts),
     <TouchableOpacity onPress={() => props.navigation.navigate(route)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, margin: 10, marginLeft: 20, marginRight: 20, backgroundColor: isFocused(route) ? '#EFF7FF' : 'transparent', borderWidth: isFocused(route) ? 1 : 0, borderColor: '#0F80D7', borderRadius: 10 }}>
         <Icon name={icon} size={24} color={isFocused(route) ? '#0F80D7' : 'black'} />
         <Text style={{ marginLeft: 32, color: isFocused(route) ? '#0F80D7' : 'black', textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{label}</Text>
         {hasBadge && alerts.length > 0 && (
-          <View style={{ backgroundColor: 'red', borderRadius: 10, width: 24, height: 24, justifyContent: 'center', alignItems: 'center', marginLeft: 'auto' }}>
+          <View style={{ backgroundColor: 'red', borderRadius: 50, width: 24, height: 24, justifyContent: 'center', alignItems: 'center', marginLeft: 'auto' }}>
             <Text style={{ color: 'white', fontWeight: 'bold' }}>{alerts.length}</Text>
           </View>
         )}
