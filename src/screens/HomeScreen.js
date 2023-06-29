@@ -16,8 +16,6 @@ import {Skeleton} from 'native-base';
 import HeaderComponentCard from '../components/HomeScreen/HeaderComponentCard';
 import FooterComponentCard from '../components/HomeScreen/FooterComponentCard';
 
-
-
 const data = [
   {
     id: '6',
@@ -108,25 +106,25 @@ const HomeScreen = ({navigation}) => {
               />
             ) : (
               <TouchableOpacity
-              onPress={() => {
-                switch(item.title){
-                  case 'Dossier Scolaire':
-                    navigation.navigate('#');
-                    break;
-                  case 'Professeurs':
-                    navigation.navigate('#');
-                    break;
-                  case 'Devoirs':
-                    navigation.navigate('#');
-                    break;
-                  case 'Mes demandes':
-                    navigation.navigate('#');
-                    break;
-                  case 'Cantine':
-                    navigation.navigate('CantineScreen');
-                    break;
-                }
-              }}>
+                onPress={() => {
+                  switch (item.title) {
+                    case 'Dossier Scolaire':
+                      navigation.navigate('#');
+                      break;
+                    case 'Professeurs':
+                      navigation.navigate('#');
+                      break;
+                    case 'Devoirs':
+                      navigation.navigate('HomeworkScreen');
+                      break;
+                    case 'Mes demandes':
+                      navigation.navigate('#');
+                      break;
+                    case 'Cantine':
+                      navigation.navigate('CantineScreen');
+                      break;
+                  }
+                }}>
                 <Card style={styles.card} elevation={0}>
                   <Card.Content>
                     <Text style={styles.title}>{item.title}</Text>
