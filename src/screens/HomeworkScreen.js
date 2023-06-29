@@ -1,43 +1,38 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import axiosInstance from '../utils/interceptor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {format} from 'date-fns';
-import RNFS from 'react-native-fs';
-import FileViewer from 'react-native-file-viewer';
+import { format } from 'date-fns';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const handleDownloadFile = async (fileName) => {
-    const downloadDest = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+    const downloadDest = `${RNFetchBlob.fs.dirs.DownloadDir}/${fileName}`;
     const fileUrl = `http://10.0.2.2:3000/files/${fileName}`;
     
         try {
-        const response = await RNFS.downloadFile({
-            fromUrl: fileUrl,
-            toFile: downloadDest,
-        }).promise;
+        const response = await RNFetchBlob.config({
+            fileCache: true,
+            addAndroidDownloads: {
+            useDownloadManager: true,
+            notification: true,
+            title: fileName,
+            description: 'Downloading file...',
+            path: downloadDest,
+            },
+        }).fetch('GET', fileUrl);
     
-        if (response.statusCode === 200) {
+        if (response.respInfo.status === 200) {
             console.log('Fichier téléchargé :', downloadDest);
-    
-            const fileExists = await RNFS.exists(downloadDest);
-            console.log('Le fichier existe :', fileExists);
-            
-            FileViewer.open(downloadDest)
-            .then(() => {
-                console.log('Fichier ouvert avec succès');
-            })
-            .catch(error => {
-                console.log('Erreur lors de l\'ouverture du fichier :', error);
-            });
         } else {
             console.log('Erreur lors du téléchargement du fichier :', response);
         }
         } catch (error) {
         console.log('Erreur globale lors du téléchargement du fichier :', error);
         }
-    };
+};
+
     
     const HomeworkScreen = () => {
     const [data, setData] = useState([]);
@@ -103,6 +98,7 @@ const handleDownloadFile = async (fileName) => {
         const now = new Date();
     
         if (displayType === 'courses' && item.course_image) {
+            console.log('Chemin d\'accès du fichier à ouvrir :', `${RNFetchBlob.fs.dirs.DocumentDir}/${item.course_image}`);
         return (
             <View style={styles.item}>
             <Text style={styles.title}>{item.name}</Text>
@@ -125,13 +121,10 @@ const handleDownloadFile = async (fileName) => {
         if (displayType === 'homeworks') {
         const isCorrectionDatePassed =
             item.date_correction &&
-            format(new Date(item.date_correction), 'yyyy-MM-dd') <
-            format(now, 'yyyy-MM-dd');
+            format(new Date(item.date_correction), 'yyyy-MM-dd') < format(now, 'yyyy-MM-dd');
         const isHomeworkDateFuture =
             item.date_devoir &&
-            format(new Date(item.date_devoir), 'yyyy-MM-dd') >
-            format(now, 'yyyy-MM-dd');
-    
+            format(new Date(item.date_devoir), 'yyyy-MM-dd') > format(now, 'yyyy-MM-dd');
         if (
             item.homework_image ||
             (isCorrectionDatePassed && item.correction_image)
@@ -169,7 +162,7 @@ const handleDownloadFile = async (fileName) => {
                 )}
                 {isHomeworkDateFuture && (
                 <Text style={styles.deadlineText}>
-                    Date limite : {format(new Date(item.date_devoir), 'dd/MM/yyyy')}
+                    A faire pour le : {format(new Date(item.date_devoir), 'dd/MM/yyyy')}
                 </Text>
                 )}
             </View>

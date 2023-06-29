@@ -31,7 +31,6 @@
     "react-native-bottomsheet-reanimated": "^0.3.1",
     "react-native-calendars": "^1.1298.0",
     "react-native-drawer-layout": "^3.2.0",
-    "react-native-file-viewer": "^2.1.5",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.10.1",
     "react-native-modal": "^13.0.1",
@@ -42,6 +41,7 @@
     "react-native-screens": "^3.20.0",
     "react-native-svg": "^13.9.0",
     "react-native-vector-icons": "^9.2.0",
+    "rn-fetch-blob": "^0.12.0",
     "socket.io-client": "^4.6.1",
     "yup": "^1.1.1"
   },
