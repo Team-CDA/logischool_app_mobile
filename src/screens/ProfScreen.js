@@ -16,7 +16,6 @@ const ProfScreen = () => {
     useEffect(() => {
         setUserInfo(contextUserInfo);
         fetchTeacher(userInfo.id);
-        // fetchSubject(userInfo.id)
     }, [contextUserInfo]);
 
     const fetchTeacher = async (userId) => {
