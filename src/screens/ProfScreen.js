@@ -3,7 +3,7 @@ import { Text } from "react-native-paper";
 import axiosInstance from "../utils/interceptor";
 import UserContext from '../utils/context/UserContext';
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import { List, Title, Divider, Card } from "react-native-paper";
+import { List, Title, Divider, Card, Avatar } from "react-native-paper";
 
 
 
@@ -31,16 +31,37 @@ const ProfScreen = () => {
 
 
     return (
-        <ScrollView>
-            {teachers.map(teacher => (
-                <TouchableOpacity key={teacher.user.id} onPress={() => sendMessageToTeacher(teacher)}>
-                    <Card>
+        <ScrollView style={{ padding: 10 }}>
+            {teachers.map((teacher) => (
+                <TouchableOpacity
+                    key={teacher.user.id}
+                    onPress={() => sendMessageToTeacher(teacher)}
+                >
+                    <Card style={{ marginBottom: 10 }}>
                         <Card.Content>
-                            <Card.Title title={`${teacher.user.subjects[0].subject_name}`} />
+                            <Title style={{ marginBottom: 10 }}>
+                                {teacher.user.subjects[0].subject_name}
+                            </Title>
                             <List.Item
-                                title={`${teacher.user.gender === 'M' ? 'Mr' : 'Mme'} ${teacher.user.lastname} ${teacher.user.firstname}`}
+                                title={`${teacher.user.lastname} ${teacher.user.firstname}`}
+                                description={
+                                    teacher.user.gender === 'M' ? 'Monsieur' : 'Madame'
+                                }
+                                left={(props) => (
+                                    <Avatar.Icon
+                                        {...props}
+                                        icon={teacher.user.gender === 'M' ? 'human-male' : 'human-female'}
+                                    />
+                                )}
                             />
                             <Divider />
+                            <List.Item
+                                title="Envoyer un message"
+                                description={`Contacter ${teacher.user.firstname} ${teacher.user.lastname}`}
+                                left={(props) => (
+                                    <List.Icon {...props} icon="email-outline" />
+                                )}
+                            />
                         </Card.Content>
                     </Card>
                 </TouchableOpacity>
