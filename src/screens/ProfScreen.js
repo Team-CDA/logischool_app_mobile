@@ -1,17 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Text } from "react-native-paper";
-import axiosInstance from "../utils/interceptor";
-import UserContext from '../utils/context/UserContext';
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { List, Title, Divider, Card, Avatar } from "react-native-paper";
-
-
+import axiosInstance from "../utils/interceptor";
+import UserContext from "../utils/context/UserContext";
 
 const ProfScreen = () => {
     const { userInfo: contextUserInfo } = useContext(UserContext);
     const [userInfo, setUserInfo] = useState(contextUserInfo);
     const [teachers, setTeachers] = useState([]);
-    const [subjects, setSubjects] = useState([]);
 
     useEffect(() => {
         setUserInfo(contextUserInfo);
@@ -19,15 +15,18 @@ const ProfScreen = () => {
     }, [contextUserInfo]);
 
     const fetchTeacher = async (userId) => {
-        const response = await axiosInstance.get(`/profclass/${userId}`)
-        setTeachers(response.data.data)
-    }
+        try {
+            const response = await axiosInstance.get(`/profclass/${userId}`);
+            setTeachers(response.data.data);
+        } catch (error) {
+            console.error("Error fetching teachers:", error);
+        }
+    };
 
     const sendMessageToTeacher = (teacher) => {
         // Logique d'envoi de message au professeur
         console.log(`Envoyer un message au professeur : ${teacher.user.email}`);
     };
-
 
     return (
         <ScrollView style={{ padding: 10 }}>
@@ -38,18 +37,14 @@ const ProfScreen = () => {
                 >
                     <Card style={{ marginBottom: 10 }}>
                         <Card.Content>
-                            <Title style={{ marginBottom: 10 }}>
-                                {teacher.user.subjects[0].subject_name}
-                            </Title>
+                            <Title style={{ marginBottom: 10 }}>{teacher.user.subjects[0].subject_name}</Title>
                             <List.Item
                                 title={`${teacher.user.lastname} ${teacher.user.firstname}`}
-                                description={
-                                    teacher.user.gender === 'M' ? 'Monsieur' : 'Madame'
-                                }
+                                description={teacher.user.gender === "M" ? "Monsieur" : "Madame"}
                                 left={(props) => (
                                     <Avatar.Icon
                                         {...props}
-                                        icon={teacher.user.gender === 'M' ? 'human-male' : 'human-female'}
+                                        icon={teacher.user.gender === "M" ? "human-male" : "human-female"}
                                     />
                                 )}
                             />
@@ -57,9 +52,7 @@ const ProfScreen = () => {
                             <List.Item
                                 title="Envoyer un message"
                                 description={`Contacter ${teacher.user.firstname} ${teacher.user.lastname}`}
-                                left={(props) => (
-                                    <List.Icon {...props} icon="email-outline" />
-                                )}
+                                left={(props) => <List.Icon {...props} icon="email-outline" />}
                             />
                         </Card.Content>
                     </Card>
@@ -68,6 +61,5 @@ const ProfScreen = () => {
         </ScrollView>
     );
 };
-
 
 export default ProfScreen;
