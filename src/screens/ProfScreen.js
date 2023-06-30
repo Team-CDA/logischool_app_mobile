@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity, Linking } from "react-native";
 import { List, Title, Divider, Card, Avatar } from "react-native-paper";
 import axiosInstance from "../utils/interceptor";
 import UserContext from "../utils/context/UserContext";
@@ -24,8 +24,23 @@ const ProfScreen = () => {
     };
 
     const sendMessageToTeacher = (teacher) => {
-        // Logique d'envoi de message au professeur
-        console.log(`Envoyer un message au professeur : ${teacher.user.email}`);
+        const recipientEmail = teacher.user.email;
+        const emailSubject = "Objet du mail";
+        const emailMessage = "Contenu du message";
+
+        const gmailUrl = `googlegmail://co?to=${recipientEmail}&subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailMessage)}`;
+
+        Linking.canOpenURL(gmailUrl)
+            .then((supported) => {
+                if (supported) {
+                    Linking.openURL(gmailUrl);
+                } else {
+                    console.error("L'application Gmail n'est pas installée sur cet appareil.");
+                }
+            })
+            .catch((error) => {
+                console.error("Erreur lors de l'ouverture de l'application Gmail :", error);
+            });
     };
 
     return (
