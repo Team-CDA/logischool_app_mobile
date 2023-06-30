@@ -42,8 +42,7 @@ export const getUserInfo = async userId => {
     console.log('erreur bb');
   }
 };
-// -----------------------------------------------
-
+// ---------------------------
 
 
 // ----------- Récuperer les notifications : 
