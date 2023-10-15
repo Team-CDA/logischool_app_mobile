@@ -16,6 +16,23 @@ const NotificationScreen = () => {
     
     // Suppression de l'alerte du localStorage
     await AsyncStorage.setItem('alerts', JSON.stringify(updatedAlerts));
+  useEffect(() => {
+    getNotifications()
+      .then(data => {
+        setNotifications(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
+  const handleDelete = (item) => {
+    setSelectedNotification(item);
+    setModalVisible(true);
   };
 
   const handlePin = (item) => {

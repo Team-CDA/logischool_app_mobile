@@ -13,18 +13,18 @@ const HomeStackNavigation = () => {
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
-        name="CalendarScreen" 
-        component={CalendarScreen} 
+        name="CalendarScreen"
+        component={CalendarScreen}
         options={{ title: 'Emploi du Temps' }}
       />
       <Stack.Screen
-        name="Home" 
-        component={HomeScreen} 
-        options={{ title: 'Accueil' , headerShown:false}}
+        name="Home"
+        component={HomeScreen}
+        options={{ title: 'Accueil', headerShown: false }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="CantineScreen"
-        component={CantineScreen} 
+        component={CantineScreen}
         options={{ title: 'Menu cantine' }}
       />
       <Stack.Screen
@@ -36,7 +36,7 @@ const HomeStackNavigation = () => {
        <Stack.Screen 
         name="CantineScreen" 
         component={CantineScreen} 
-        options={{ title: 'Emploi du Temps' }}
+        options={{ title: 'Professeurs' }}
       />
         <Stack.Screen 
         name="profScreen" 
@@ -47,6 +47,7 @@ const HomeStackNavigation = () => {
         name="AbsenceScreen"
         component={AbsenceScreen} 
         options={{ title: 'Vos Absences' }}
+
       />
 
     </Stack.Navigator>
