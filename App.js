@@ -1,3 +1,5 @@
+console.disableYellowBox = true;
+
 import React, {useState, useEffect, useContext} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import DrawerNavigation from './src/navigation/DrawerNavigation';
@@ -5,6 +7,8 @@ import {
   NativeBaseProvider,
   extendTheme,
 } from 'native-base';
+import { View, Image } from 'react-native';
+
 import LoginForm from './src/components/LoginForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserContext from './src/utils/context/UserContext';
@@ -27,8 +31,16 @@ function App() {
   const [notifications, setNotifications] = useState(0);
   const [alerts, setAlerts] = useState([]);
 
+  const [isLoading, setIsLoading] = useState(true);
 
 const [userInfo, setUserInfo] = useState(null);
+
+useEffect(() => {
+  // Simuler un chargement de 3 secondes avant d'afficher l'application
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 3000);
+}, []); 
 
 useEffect(() => {
   const fetchUserInfo = async () => {
@@ -102,16 +114,23 @@ useEffect(() => {
       value={{
         token: token,
         setToken: setToken,
-        userInfo: userInfo, 
-        setUserInfo: setUserInfo,  
+        userInfo: userInfo,
+        setUserInfo: setUserInfo,
         disconnect: disconnect,
         alerts: alerts,
         setAlerts: setAlerts,
       }}>
       <NativeBaseProvider theme={theme}>
-        {!token ? (
+        {isLoading ? (
+          // Page de chargement
+          <View style={{ flex: 1, backgroundColor: '#005F7D', alignItems: 'center', justifyContent: 'center' }}>
+            <Image source={require('./src/assets/img/LOGO LOGISCHOOL - 750x750.png')} />
+          </View>
+        ) : !token ? (
+          // Page de connexion
           <LoginForm />
         ) : (
+          // Application
           <NavigationContainer>
             <DrawerNavigation />
           </NavigationContainer>
@@ -119,6 +138,7 @@ useEffect(() => {
       </NativeBaseProvider>
     </UserContext.Provider>
   );
+  
 }
 
 export default App;

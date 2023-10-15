@@ -33,15 +33,10 @@ const HomeStackNavigation = () => {
         options={{ title: 'Devoirs' }}
       />
       
-       <Stack.Screen 
-        name="CantineScreen" 
-        component={CantineScreen} 
-        options={{ title: 'Professeurs' }}
-      />
         <Stack.Screen 
         name="profScreen" 
         component={profScreen} 
-        options={{ title: 'Emploi du Temps' }}
+        options={{ title: 'profScreen' }}
       />
         <Stack.Screen 
         name="AbsenceScreen"
