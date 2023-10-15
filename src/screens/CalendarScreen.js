@@ -133,8 +133,8 @@ const CalendarScreen = () => {
     <BottomSheetModalProvider>
       <View style={styles.container}>
         <Agenda
-          firstDay={1}
-          items={items}
+          firstDay={1} 
+          items={items} 
           onDayPress={onDayPress}
           markedDates={getMarkedDates()}
           renderItem={(item, firstItemInDay) => (

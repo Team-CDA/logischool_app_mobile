@@ -4,6 +4,7 @@ import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import CantineScreen from '../screens/CantineScreen';
 import ProfScreen from '../screens/ProfScreen';
+import HomeworkScreen from '../screens/HomeworkScreen';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +31,12 @@ const HomeStackNavigation = () => {
         component={ProfScreen}
         options={{ title: 'Professeurs' }}
       />
+      <Stack.Screen
+        name="HomeworkScreen"
+        component={HomeworkScreen}
+        options={{ title: 'Devoirs' }}
+      />
+
 
     </Stack.Navigator>
   );
